@@ -152,11 +152,11 @@ double path_before_chute(double time, double x, double y,  double dt, double ang
 			//connect to best result (update node) 
 			
 			node* min_node = copy_node(test_node); //make sure to use deep copy, because test node will be reset to use later
-			attach_node(location_node, test_node);
+			attach_node(location_node, min_node);
 		}
 		free(test_node);
 	}
-	free(min_node); 
+
 	return min_time; //min_time is time to land if you took best path from current loc with current v_x and v_y
 }
 
@@ -164,9 +164,24 @@ double path_before_chute(double time, double x, double y,  double dt, double ang
 
 
 
-double save_to_text()
+void save_to_text(node* head)
 {
-	return 0;
+	FILE *fp;
+    fp = fopen("data.txt", "w");
+
+    while(head != NULL)
+    {
+    	char line[50];
+ 
+		sprintf(line,"%f %f\n", head->x, head->y);
+    	fputs(line, fp);
+    	if(head->next != NULL)
+    		head = head->next;
+    	else
+    		head = NULL;
+    }
+    
+    fclose(fp);
 }
 
 
@@ -177,11 +192,12 @@ void make_graph()
 
 int main()
 {
-	node* head = make_node(100,1000);
+	node* head = make_node(100,1051);
 	double test = atan(1/1);
 	printf("test: %f\n", test);
-	double x = path_before_chute(0, 100, 1051, .5, 0, head);
+	double x = path_before_chute(0, 100, 1051, 1, 0, head);
 	printf("Time: %f\n",x);
+	save_to_text(head);
 	return 0;
 
 }
